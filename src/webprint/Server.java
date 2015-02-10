@@ -140,13 +140,18 @@ class Server {
                         responseJson.put("ports", jportArray);
                     }
                     if (action.equals("connectport")) {
-                        
+                        if (!pManager.openPortWithProperties(jrequest.getString("port"), jrequest.getJSONObject("settings"))){
+                            responseJson.put("error", "Could not open serial port: "+pManager.getException());
+                        }
                     }
                     if (action.equals("connectprinter")) {
                         
                     }
                     if (action.equals("print")) {
-                        
+                        pManager.append64(jrequest.getString("data"));
+                        if (!pManager.printRaw(jrequest.getString("printer"))){
+                            responseJson.put("error", "Failed to print: "+pManager.getException());
+                        }
                     }
                     System.out.println(action);
                 }

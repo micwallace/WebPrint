@@ -57,6 +57,7 @@ import qz.exception.NullCommandException;
 import qz.exception.NullPrintServiceException;
 import qz.exception.SerialException;
 import qz.json.JSONArray;
+import qz.json.JSONObject;
 import qz.reflection.ReflectException;
 
 /**
@@ -97,7 +98,7 @@ public class PrintManager {
     private int dotDensity = 32;
 
     private boolean allowMultiple;
-    private String jobName;
+    private String jobName = "WebPrint";
     private String file;
     private String xmlTag;
     private String printer;
@@ -762,7 +763,12 @@ public class PrintManager {
         }
     }
 
-    public boolean printRaw() {
+    public boolean printRaw(String printer) {
+        if (this.printer==null || !this.printer.equals(printer)){
+            if (!setPrinter(printer)){
+                return false;
+            }
+        }
         try {
             if (isRawAutoSpooling()) {
                 LinkedList<ByteArrayBuilder> pages = ByteUtilities.splitByteArray(
@@ -905,16 +911,21 @@ public class PrintManager {
                 stopBits, Integer.toString(parity), flowControl);
     }
 
-    public void setSerialProperties(String baud, String dataBits, String stopBits, String parity, String flowControl) {
+    public boolean setSerialProperties(String baud, String dataBits, String stopBits, String parity, String flowControl) {
         try {
             getSerialIO().setProperties(baud, dataBits, stopBits, parity, flowControl);
+            return true;
         } catch (Throwable t) {
             this.set(t);
+            return false;
         }
     }
 
-    public void openPort(String serialPortName) {
-        this.openPort(serialPortName, false);
+    public boolean openPortWithProperties(String serialPortName, JSONObject portSettings) {
+        if (this.openPort(serialPortName, false)){
+            return false;
+        }
+        return this.setSerialProperties(portSettings.getString("baud"), portSettings.getString("databits"), portSettings.getString("stopbits"), portSettings.getString("parity"), portSettings.getString("flow"));
     }
 
     public boolean closeCurrentPort() {
