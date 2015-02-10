@@ -115,7 +115,7 @@ public class PrintHTML extends JLabel implements Printable {
         clear();
     }
     
-    public void setPrintParameters(PrintApplet a) {
+    public void setPrintParameters(PrintManager a) {
         this.ps.set(a.getPrintService());
         this.jobName.set(a.getJobName().replace(" ___ ", " HTML "));
     }

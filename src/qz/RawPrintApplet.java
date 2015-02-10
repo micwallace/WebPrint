@@ -35,14 +35,14 @@ import java.util.logging.Level;
  * @author tfino
  */
 @Deprecated
-public class RawPrintApplet extends PrintApplet {
+public class RawPrintApplet extends PrintManager {
     @Deprecated
     public RawPrintApplet() {
         super();
         LogIt.log(Level.WARNING, "Since version 1.2.0, use of \"" +
                 this.getClass().getCanonicalName() + "\" has been renamed and " +
                 "is now deprecated and will be removed in future versions." +
-                "  Please use \"" + PrintApplet.class.getCanonicalName() + "\" instead. " +
+                "  Please use \"" + PrintManager.class.getCanonicalName() + "\" instead. " +
                 "All functionality will remain the same.");
     }
 }

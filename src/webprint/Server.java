@@ -55,6 +55,7 @@ import org.apache.http.protocol.ResponseContent;
 import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
 import org.apache.http.util.EntityUtils;
+import qz.PrintManager;
 import qz.PrintServiceMatcher;
 import qz.SerialIO;
 import qz.json.JSONArray;
@@ -87,29 +88,16 @@ class Server {
         System.out.println("Server shutdown");
     }
 
-    private SerialIO serialIO;
-
-    public SerialIO getSerialIO() {
-        try {
-            Class.forName("jssc.SerialPort");
-            if (this.serialIO == null) {
-                this.serialIO = new SerialIO();
-            }
-            return serialIO;
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
     // Server threads
     static class HttpHandler implements HttpRequestHandler {
 
         Server context;
+        PrintManager pManager;
 
         public HttpHandler(Server cont) {
             super();
             context = cont;
+            pManager = new PrintManager();
         }
 
         @Override
@@ -147,9 +135,18 @@ class Server {
                         responseJson.put("printers", jprintArray);
                     }
                     if (action.equals("listports")) {
-                        String[] portArray = this.context.getSerialIO().getSerialPortArray();
+                        String[] portArray = pManager.findPorts();
                         JSONArray jportArray = new JSONArray(portArray);
                         responseJson.put("ports", jportArray);
+                    }
+                    if (action.equals("connectport")) {
+                        
+                    }
+                    if (action.equals("connectprinter")) {
+                        
+                    }
+                    if (action.equals("print")) {
+                        
                     }
                     System.out.println(action);
                 }
@@ -167,7 +164,7 @@ class Server {
             
             response.setStatusCode(200);
         }
-
+        
     }
 
     static class RequestListenerThread extends Thread {

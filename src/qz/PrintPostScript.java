@@ -527,7 +527,7 @@ public class PrintPostScript implements Printable {
         this.paperSize.set(PaperSize);
     }
 
-    public void setPrintParameters(PrintApplet a) {
+    public void setPrintParameters(PrintManager a) {
         setPrintService(a.getPrintService());
 //        setMargin(rpa.getPSMargin());
         setPaperSize(a.getPaperSize());

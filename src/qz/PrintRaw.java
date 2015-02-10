@@ -154,7 +154,7 @@ public class PrintRaw {
      * @throws UnknownHostException
      * @throws IOException 
      */
-    private boolean printToSocket() throws UnknownHostException, IOException {
+    public boolean printToSocket() throws UnknownHostException, IOException {
         LogIt.log("Printing to host " + socketHost.get() + ":" + socketPort.get());
         Socket socket = new Socket(socketHost.get(), socketPort.get());
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -502,7 +502,7 @@ public class PrintRaw {
         return this.jobName.get();
     }
 
-    public void setPrintParameters(PrintApplet rpa) {
+    public void setPrintParameters(PrintManager rpa) {
         this.setPrintService(rpa.getPrintService());
         this.setJobName(rpa.getJobName().replace(" ___ ", " Raw "));
         this.setCharset(rpa.getCharset());
