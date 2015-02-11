@@ -111,6 +111,7 @@ public class SerialIO {
             port = new SerialPort(this.portName = portName);
             try {
                 port.openPort();
+                port.setParams(baudRate, dataBits, stopBits, parity);
                 port.addEventListener(new SerialPortEventListener() {
                     public void serialEvent(SerialPortEvent spe) {
                         SerialIO.this.serialEvent(spe);

@@ -21,8 +21,6 @@
  */
 package qz;
 
-import java.applet.Applet;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.io.ByteArrayInputStream;
@@ -34,12 +32,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -48,8 +41,6 @@ import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.xml.parsers.ParserConfigurationException;
 import jssc.SerialPortException;
-import netscape.javascript.JSException;
-import netscape.javascript.JSObject;
 import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 import qz.exception.InvalidFileTypeException;
@@ -193,7 +184,6 @@ public class PrintManager {
      * Tells jZebra to spool a new document when the raw data matches
      * <code>pageBreak</code>
      *
-     * @param String base64
      */
     //   @Deprecated
     //   public void setPageBreak(String pageBreak) {
@@ -224,8 +214,8 @@ public class PrintManager {
      * contents and appends it to the buffer. Assumes XML content is base64
      * formatted.
      *
-     * @param xmlFile
-     * @param tagName
+     * @param url
+     * @param xmlTag
      */
     public void appendXML(String url, String xmlTag) {
         try {
@@ -246,7 +236,7 @@ public class PrintManager {
     /**
      * Appends the entire contents of the specified file to the buffer
      *
-     * @param rawDataFile
+     * @param url
      */
     public void appendFile(String url) {
         try {
@@ -258,7 +248,7 @@ public class PrintManager {
 
     /**
      *
-     * @param imageFile
+     * @param url
      */
     public void appendImage(String url) {
         readImage(url);
@@ -505,7 +495,6 @@ public class PrintManager {
             } catch (InvalidFileTypeException e) {
                 this.set(e);
                 this.clear();
-                return;
             } catch (PrintException ex) {
                 Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -514,7 +503,6 @@ public class PrintManager {
         } else {
             this.set(new NullPrintServiceException("Blank output path supplied"));
             this.clear();
-            return;
         }
     }
 
@@ -757,7 +745,7 @@ public class PrintManager {
         return true;
     }
 
-    public boolean printHTML() {
+    public boolean printHTML(String printer) {
         if (!checkPrinterConnection(printer)){
             return false;
         }
@@ -771,7 +759,7 @@ public class PrintManager {
         return true;
     }
 
-    public boolean printPS() {
+    public boolean printPS(String printer) {
         if (!checkPrinterConnection(printer)){
             return false;
         }
@@ -877,19 +865,20 @@ public class PrintManager {
     public boolean send(String portName, String data) {
         try {
             // if port is not open or targering a different port, try to connect it
-            if (!getSerialIO().isOpen() || !this.serialPortName.equals(portName)) {
+            if (!getSerialIO().isOpen() || !getSerialIO().getPortName().equals(portName)) {
                 if (!this.openPort(portName, false)){
                     return false;
                 }
-            } else if (getSerialIO().getPortName().equals(portName)) {
+            }
+            if (getSerialIO().getPortName().equals(portName)) {
                 //getSerialIO().append(data.getBytes(charset.name()));
                 getSerialIO().append(Base64.decode(data));
                 try {
                     logCommands(new String(getSerialIO().getInputBuffer().getByteArray(), charset.name()));
                     getSerialIO().send();
-                    return true;
                 } catch (Throwable t) {
                     this.set(t);
+                    return false;
                 }
             } else {
                 throw new SerialException("Port specified [" + portName + "] "
@@ -899,8 +888,9 @@ public class PrintManager {
             }
         } catch (Throwable t) {
             this.set(t);
+            return false;
         }
-        return false;
+        return true;
     }
 
     public String sendWithOutput(String portName, String data) {
@@ -924,6 +914,21 @@ public class PrintManager {
             send(portName, new String(ByteUtilities.hexStringToByteArray(data), charset.name()));
         } catch (UnsupportedEncodingException ex) {
             this.set(ex);
+        }
+    }
+
+    public void setSerialProperties(int baud, int dataBits, String stopBits, int parity, String flowControl) {
+        setSerialProperties(Integer.toString(baud), Integer.toString(dataBits),
+                stopBits, Integer.toString(parity), flowControl);
+    }
+
+    public boolean setSerialProperties(String baud, String dataBits, String stopBits, String parity, String flowControl) {
+        try {
+            getSerialIO().setProperties(baud, dataBits, stopBits, parity, flowControl);
+            return true;
+        } catch (Throwable t) {
+            this.set(t);
+            return false;
         }
     }
 
@@ -956,22 +961,19 @@ public class PrintManager {
     public boolean openPort(String serialPortName, boolean autoSetSerialProperties) {
         // check if port is already open
         if (this.serialPortName != null){
-            if (this.serialPortName.equals(serialPortName)){
-                return true; // port already opened
-            }
             this.closeCurrentPort();
         }
         this.serialPortName = serialPortName;
         logOpeningPort();
         try {
             System.out.println(serialPortName);
+            getSerialIO().open(serialPortName);
             if (portSettings!=null){
                 getSerialIO().setProperties(portSettings.getString("baud"), portSettings.getString("databits"), portSettings.getString("stopbits"), portSettings.getString("parity"), portSettings.getString("flow"));
             } else {
                 if (autoSetSerialProperties) // Currently a Windows-only feature
-                getSerialIO().autoSetProperties();
+                    getSerialIO().autoSetProperties();
             }
-            getSerialIO().open(serialPortName);
             return true;
         } catch (SerialPortException | JSONException | IOException | SerialException t) {
             set(t);
@@ -1025,19 +1027,6 @@ public class PrintManager {
         return this.networkUtilities;
     }
 
-    /*  private NetworkHashMap getNetworkHashMap() {
-     if (this.networkHashMap == null) {
-     this.networkHashMap = new NetworkHashMap();
-     }
-     return this.networkHashMap;
-     }*/
-
-    /*private NetworkUtilities getNetworkUtilities() {
-     if (this.networkUtilities == null) {
-     this.networkUtilities = new NetworkUtilities();
-     }
-     return this.networkUtilities;
-     }*/
     /**
      * Returns a comma delimited <code>String</code> containing the IP Addresses
      * found for the specified MAC address. The format of these (IPv4 vs. IPv6)

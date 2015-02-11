@@ -5,37 +5,22 @@
  */
 package webprint;
 
-import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
-import java.lang.reflect.Array;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.util.Locale;
-import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.print.PrintService;
-import static javax.swing.text.DefaultStyledDocument.ElementSpec.ContentType;
 import org.apache.http.ConnectionClosedException;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpServerConnection;
-import org.apache.http.HttpStatus;
 import org.apache.http.MethodNotSupportedException;
-import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.DefaultHttpResponseFactory;
@@ -54,10 +39,8 @@ import org.apache.http.protocol.ResponseConnControl;
 import org.apache.http.protocol.ResponseContent;
 import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
-import org.apache.http.util.EntityUtils;
 import qz.PrintManager;
 import qz.PrintServiceMatcher;
-import qz.SerialIO;
 import qz.json.JSONArray;
 import qz.json.JSONObject;
 
@@ -138,7 +121,7 @@ class Server {
                         JSONArray jportArray = new JSONArray(portArray);
                         responseJson.put("ports", jportArray);
                     }
-                    if (action.equals("connectport")) {
+                    if (action.equals("openport")) {
                         if (!pManager.openPortWithProperties(jrequest.getString("port"), jrequest.getJSONObject("settings"))){
                             responseJson.put("error", "Could not open serial port: "+pManager.getException());
                         }
@@ -160,7 +143,7 @@ class Server {
                     }
                     if (action.equals("printhtml")) {
                         pManager.appendHTML(jrequest.getString("data"));
-                        if (!pManager.printHTML()){
+                        if (!pManager.printHTML(jrequest.getString("printer"))){
                             responseJson.put("error", "Failed to print: "+pManager.getException());
                         }
                     }

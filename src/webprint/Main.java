@@ -5,7 +5,6 @@
  */
 package webprint;
 
-import com.sun.net.httpserver.HttpServer;
 import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.MenuItem;
@@ -24,6 +23,7 @@ import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.lantern.AppIndicatorTray;
@@ -124,6 +124,8 @@ public class Main {
                 public void actionPerformed(ActionEvent e) {
                     //setVisible(true);
                     //setExtendedState(JFrame.NORMAL);
+                    JOptionPane.showMessageDialog(null, "Settings currently not implemented.", "Error",
+                                    JOptionPane.ERROR_MESSAGE);
                 }
             };
             PopupMenu popup = new PopupMenu(); 

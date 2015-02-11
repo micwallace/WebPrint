@@ -10,10 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import webprint.Main;
 
 /**
@@ -159,6 +156,8 @@ public class AppIndicatorTray {
         System.out.println("openDashboard called.");
         //app.setVisible(true);
         //app.setExtendedState(JFrame.NORMAL);
+        JOptionPane.showMessageDialog(null, "Settings currently not implemented.", "Error",
+                                    JOptionPane.ERROR_MESSAGE);
     }
 
     private void quit() {
