@@ -125,7 +125,7 @@ public class AppIndicatorTray {
         aiclass.fallback = replacementFallback;
         aiclass.write();
         libappindicator.app_indicator_set_menu(appIndicator, menu);
-        changeIcon(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()+"WallaceLED.png");
+        changeIcon(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()+"webprinticonsmall.png");
         libappindicator.app_indicator_set_status(appIndicator, AppIndicator.STATUS_ACTIVE);
         new Thread() {
             public void run() {

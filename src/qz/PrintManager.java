@@ -37,6 +37,7 @@ import java.nio.charset.IllegalCharsetNameException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -57,6 +58,7 @@ import qz.exception.NullCommandException;
 import qz.exception.NullPrintServiceException;
 import qz.exception.SerialException;
 import qz.json.JSONArray;
+import qz.json.JSONException;
 import qz.json.JSONObject;
 import qz.reflection.ReflectException;
 
@@ -88,7 +90,6 @@ public class PrintManager {
     private Throwable t;
     private PaperFormat paperSize;
     private String serialPortName;
-    private int serialPortIndex = -1;
     private boolean reprint;
     private boolean htmlPrint;
     private boolean alternatePrint;
@@ -746,28 +747,47 @@ public class PrintManager {
     public void clear() {
         getPrintRaw().clear();
     }
-
-    public void printHTML() {
-        try {
-            logAndPrint(getPrintHTML());
-        } catch (PrinterException ex) {
-            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void printPS() {
-        try {
-            logAndPrint(getPrintPS());
-        } catch (PrinterException ex) {
-            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public boolean printRaw(String printer) {
+    
+    private boolean checkPrinterConnection(String printer){
         if (this.printer==null || !this.printer.equals(printer)){
             if (!setPrinter(printer)){
                 return false;
             }
+        }
+        return true;
+    }
+
+    public boolean printHTML() {
+        if (!checkPrinterConnection(printer)){
+            return false;
+        }
+        try {
+            logAndPrint(getPrintHTML());
+        } catch (PrinterException ex) {
+            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
+            this.set(ex);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean printPS() {
+        if (!checkPrinterConnection(printer)){
+            return false;
+        }
+        try {
+            logAndPrint(getPrintPS());
+        } catch (PrinterException ex) {
+            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
+            this.set(ex);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean printRaw(String printer) {
+        if (!checkPrinterConnection(printer)){
+            return false;
         }
         try {
             if (isRawAutoSpooling()) {
@@ -792,11 +812,12 @@ public class PrintManager {
             return true;
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
+            this.set(ex);
         } catch (IOException ex) {
             Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (PrintException ex) {
-            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
+            this.set(ex);
+        } catch (PrintException | InterruptedException ex) {
+            this.set(ex);
             Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
@@ -855,12 +876,12 @@ public class PrintManager {
 
     public boolean send(String portName, String data) {
         try {
-            if (!getSerialIO().isOpen()) {
-                throw new SerialException("A port has not yet been opened.");
-            } else if (getSerialIO().getPortName().equals(portName)) {
-                while (printingimg) {
-                    Thread.sleep(10); // wait until image appended
+            // if port is not open or targering a different port, try to connect it
+            if (!getSerialIO().isOpen() || !this.serialPortName.equals(portName)) {
+                if (!this.openPort(portName, false)){
+                    return false;
                 }
+            } else if (getSerialIO().getPortName().equals(portName)) {
                 //getSerialIO().append(data.getBytes(charset.name()));
                 getSerialIO().append(Base64.decode(data));
                 try {
@@ -906,26 +927,13 @@ public class PrintManager {
         }
     }
 
-    public void setSerialProperties(int baud, int dataBits, String stopBits, int parity, String flowControl) {
-        setSerialProperties(Integer.toString(baud), Integer.toString(dataBits),
-                stopBits, Integer.toString(parity), flowControl);
-    }
-
-    public boolean setSerialProperties(String baud, String dataBits, String stopBits, String parity, String flowControl) {
-        try {
-            getSerialIO().setProperties(baud, dataBits, stopBits, parity, flowControl);
-            return true;
-        } catch (Throwable t) {
-            this.set(t);
-            return false;
-        }
-    }
-
+    JSONObject portSettings = null;
     public boolean openPortWithProperties(String serialPortName, JSONObject portSettings) {
-        if (this.openPort(serialPortName, false)){
+        this.portSettings = portSettings;
+        if (!this.openPort(serialPortName, false)){
             return false;
         }
-        return this.setSerialProperties(portSettings.getString("baud"), portSettings.getString("databits"), portSettings.getString("stopbits"), portSettings.getString("parity"), portSettings.getString("flow"));
+        return true;
     }
 
     public boolean closeCurrentPort() {
@@ -946,34 +954,26 @@ public class PrintManager {
     }
 
     public boolean openPort(String serialPortName, boolean autoSetSerialProperties) {
-        this.serialPortIndex = -1;
+        // check if port is already open
+        if (this.serialPortName != null){
+            if (this.serialPortName.equals(serialPortName)){
+                return true; // port already opened
+            }
+            this.closeCurrentPort();
+        }
         this.serialPortName = serialPortName;
         logOpeningPort();
         try {
-            getSerialIO().open(serialPortName);
-            // Currently a Windows-only feature
-            if (autoSetSerialProperties) {
+            System.out.println(serialPortName);
+            if (portSettings!=null){
+                getSerialIO().setProperties(portSettings.getString("baud"), portSettings.getString("databits"), portSettings.getString("stopbits"), portSettings.getString("parity"), portSettings.getString("flow"));
+            } else {
+                if (autoSetSerialProperties) // Currently a Windows-only feature
                 getSerialIO().autoSetProperties();
             }
-            return true;
-        } catch (Exception t) {
-            set(t);
-            return false;
-        }
-    }
-
-    public boolean openPort(int serialPortIndex, boolean autoSetSerialProperties) {
-        this.serialPortName = null;
-        this.serialPortIndex = serialPortIndex;
-        logOpeningPort();
-        try {
             getSerialIO().open(serialPortName);
-            // Currently a Windows-only feature
-            if (autoSetSerialProperties) {
-                getSerialIO().autoSetProperties();
-            }
             return true;
-        } catch (Exception t) {
+        } catch (SerialPortException | JSONException | IOException | SerialException t) {
             set(t);
             return false;
         }

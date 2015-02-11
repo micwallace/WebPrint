@@ -136,6 +136,9 @@ public class SerialIO {
      */
     public void autoSetProperties() throws SerialPortException, IOException, SerialException {
        int[] params = SerialUtilities.getSystemAttributes(this.portName);
+       if (params==null){
+           return;
+       }
        port.setParams(params[0], params[1], params[2], params[3]);
        port.setFlowControlMode(params[4]);
     }

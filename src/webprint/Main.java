@@ -88,10 +88,10 @@ public class Main {
         // Create applicable systray
         if (distro.contains("Ubuntu")){
             // check that icon exists
-            String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()+"WallaceLED.png";
+            String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()+"webprinticonsmall.png";
             File file = new File(path);
             if (!file.exists()) {
-                InputStream link = (getClass().getResourceAsStream("img/RGBsmall.png"));
+                InputStream link = (getClass().getResourceAsStream("img/webprinticonsmall.png"));
                 try {
                     Files.copy(link, file.getAbsoluteFile().toPath());
                 } catch (IOException ex) {
@@ -107,7 +107,7 @@ public class Main {
             System.out.println("system tray supported");
             tray = SystemTray.getSystemTray();
 
-            Image image = Toolkit.getDefaultToolkit().getImage(Main.class.getResource("img/RGBsmall.png"));
+            Image image = Toolkit.getDefaultToolkit().getImage(Main.class.getResource("img/webprinticonsmall.png"));
             // AWT tray icon (doesn't allow radio buttons)
             ActionListener exitListener = new ActionListener() {
 
