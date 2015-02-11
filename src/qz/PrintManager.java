@@ -1,22 +1,19 @@
 /**
- * @author Tres Finocchiaro
+ * This file is part of WebPrint
+ * 
+ * @author Michael Wallace
  *
- * Copyright (C) 2013 Tres Finocchiaro, QZ Industries
+ * Copyright (C) 2015 Michael Wallace, WallaceIT
  *
- * IMPORTANT: This software is dual-licensed
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
- * LGPL 2.1 This is free software. This software and source code are released
- * under the "LGPL 2.1 License". A copy of this license should be distributed
- * with this software. http://www.gnu.org/licenses/lgpl-2.1.html
- *
- * QZ INDUSTRIES SOURCE CODE LICENSE This software and source code *may* instead
- * be distributed under the "QZ Industries Source Code License", available by
- * request ONLY. If source code for this project is to be made proprietary for
- * an individual and/or a commercial entity, written permission via a copy of
- * the "QZ Industries Source Code License" must be obtained first. If you've
- * obtained a copy of the proprietary license, the terms and conditions of the
- * license apply only to the licensee identified in the agreement. Only THEN may
- * the LGPL 2.1 license be voided.
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
  */
 package qz;
@@ -62,16 +59,8 @@ import qz.reflection.ReflectException;
  */
 public class PrintManager {
 
-    //private static final AtomicReference<Thread> thisThread = new AtomicReference<Thread>(null);
     public static final String VERSION = "1.8.0";
-    public static final int APPEND_XML = 1;
-    public static final int APPEND_RAW = 2;
-    public static final int APPEND_IMAGE = 3;
-    public static final int APPEND_IMAGE_SERIAL = 5;
-    public static final int APPEND_IMAGE_PS = 4;
-    public static final int APPEND_PDF = 8;
-    public static final int APPEND_HTML = 16;
-    private long sleep;
+
     private PrintService ps;
     private PrintRaw printRaw;
     private SerialIO serialIO;
@@ -99,28 +88,9 @@ public class PrintManager {
     private int documentsPerSpool = 0;
     private String endOfDocument;
 
-    /**
-     * Create a privileged thread that will listen for JavaScript events
-     *
-     * @since 1.1.7
-     */
-    //@Override
     public void PrintManager() {
         logStart();
-        /*try {
-         AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-         //@Override
 
-         public Object run() throws Exception {
-
-         startJavaScriptListener();
-         return null;
-         }
-         });
-         } catch (PrivilegedActionException e) {
-         LogIt.log("Error starting main JavaScript thread.  All else will fail.", e);
-         set(e);
-         }*/
     }
 
     public void useAlternatePrinting() {
@@ -180,15 +150,6 @@ public class PrintManager {
         return getSerialIO().getSerialPorts();
     }
 
-    /**
-     * Tells jZebra to spool a new document when the raw data matches
-     * <code>pageBreak</code>
-     *
-     */
-    //   @Deprecated
-    //   public void setPageBreak(String pageBreak) {
-    //       this.pageBreak = pageBreak;
-    //   }
     public void append64(String base64) {
         try {
             getPrintRaw().append(Base64.decode(base64));
@@ -302,8 +263,6 @@ public class PrintManager {
      * guarantee that the applet is aware of the browser's location.href.
      * @param lang Usually "ESCP", "EPL", "ZPL", etc. Parsed by
      * <code>LanguageType</code> class.
-     * @param dotDensity From the <code>ESC *</code> section of the ESC/P
-     * programmer's manual. Default = 32
      */
     public boolean appendImage(String imageFile, String lang) {
         try {
@@ -1169,10 +1128,6 @@ public class PrintManager {
 
     public String getExceptionMessage() {
         return t.getLocalizedMessage();
-    }
-
-    public long getSleepTime() {
-        return sleep;
     }
 
     public String getVersion() {
