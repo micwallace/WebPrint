@@ -17,6 +17,7 @@ For an example on how to use this feature, see example.js in the project.
 # How this came about
 Mid last year I developed an android applet that essentially accepts http requests and forwards them to the specified socket or network printer.
 https://github.com/micwallace/HttpSocketAdaptor
+
 After a few months I found this solution stopped working due to stronger mixed-content restrictions in most browsers.
 Thanks to the postMessage API I was able to securely avoid these restrictions.
 
