@@ -47,6 +47,7 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     };
 
     function sendAppletRequest(data) {
+        data.cookie = cookie;
         if (!wpwindow || wpwindow.closed) {
             openPrintWindow();
             setTimeout(function () {
@@ -79,8 +80,7 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
         switch (event.data.a) {
             case "init":
                 clearTimeout(wptimeOut);
-                if (defReadyCb instanceof Function)
-                    defReadyCb();
+                sendAppletRequest({a:"init"});
                 break;
             case "response":
                 var response = JSON.parse(event.data.json);
@@ -93,6 +93,13 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
                 } else if (response.hasOwnProperty('error')) {
                     alert(response.error);
                 }
+                if (response.hasOwnProperty("cookie")){
+                    cookie = response.cookie;
+                    localStorage.setItem("webprint_auth", response.cookie);
+                }
+                if (response.hasOwnProperty("ready")){
+                    if (defReadyCb instanceof Function) defReadyCb();
+                }
         }
         //alert("The Web Printing service has been loaded in a new tab, keep it open for faster printing.");
     }
@@ -103,9 +110,14 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
             window.open("/assets/libs/WebPrint.jar", '_blank');
         }
     }
+    
+    var cookie = localStorage.getItem("webprint_auth");
+    if (cookie==null){
+        cookie = "";
+    }
 
-    if (init)
-        this.checkRelay();
+    if (init) this.checkRelay();
+    
     return this;
 };
 

@@ -156,8 +156,7 @@ public class AppIndicatorTray {
         System.out.println("openDashboard called.");
         //app.setVisible(true);
         //app.setExtendedState(JFrame.NORMAL);
-        JOptionPane.showMessageDialog(null, "Settings currently not implemented.", "Error",
-                                    JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Settings currently not implemented.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     private void quit() {
