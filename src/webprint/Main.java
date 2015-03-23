@@ -153,6 +153,7 @@ public class Main {
             trayIcon = new TrayIcon(image);
             trayIcon.setPopupMenu(popup);
             trayIcon.setImageAutoSize(true);
+            trayIcon.setToolTip("WebPrint");
             try {
                 tray.add(trayIcon);
             } catch (AWTException ex) {
