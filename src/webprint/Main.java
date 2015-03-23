@@ -74,7 +74,6 @@ public class Main {
      *  thanks Mohammad!
      */
     ButtonGroup traymgrp;
-    PopupMenu traymenu;
     TrayIcon trayIcon;
     SystemTray tray;
     AppIndicatorTray unitytray = null;
@@ -101,7 +100,7 @@ public class Main {
         // Create applicable systray
         if (distro.contains("Ubuntu")){
             // check that icon exists
-            String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()+"webprinticonsmall.png";
+            String path = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent()+"/webprinticonsmall.png";
             File file = new File(path);
             if (!file.exists()) {
                 InputStream link = (getClass().getResourceAsStream("img/webprinticonsmall.png"));
@@ -131,7 +130,7 @@ public class Main {
                 }
             };
 
-            ActionListener openListener = new ActionListener() {
+            /*ActionListener openListener = new ActionListener() {
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -140,19 +139,19 @@ public class Main {
                     JOptionPane.showMessageDialog(null, "Settings currently not implemented.", "Error",
                                     JOptionPane.ERROR_MESSAGE);
                 }
-            };
+            };*/
             PopupMenu popup = new PopupMenu(); 
-            MenuItem menuItem = new MenuItem("Settings..."); 
+            /*MenuItem menuItem = new MenuItem("Settings..."); 
             menuItem.addActionListener(openListener);
-            popup.add(menuItem); 
-            menuItem = new MenuItem("Exit");
+            popup.add(menuItem); */
+            MenuItem menuItem = new MenuItem("Exit");
             menuItem.addActionListener(exitListener);
             popup.add(menuItem);
             // swing tray icon
             //genTrayMenu();
 
             trayIcon = new TrayIcon(image);
-            trayIcon.setPopupMenu(traymenu);
+            trayIcon.setPopupMenu(popup);
             trayIcon.setImageAutoSize(true);
             try {
                 tray.add(trayIcon);

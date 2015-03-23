@@ -35,7 +35,7 @@ import qz.json.JSONObject;
  */
 class AccessControl {
 
-    static String fileloc = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "acl.json";
+    static String fileloc = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent() + "/webprint_acl.json";
     JSONObject aclmap;
 
     public AccessControl() {

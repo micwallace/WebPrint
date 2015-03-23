@@ -48,8 +48,13 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
 
     function sendAppletRequest(data) {
         data.cookie = cookie;
-        if (!wpwindow || wpwindow.closed) {
-            openPrintWindow();
+        if (!wpwindow || wpwindow.closed || !wpready) {
+            if (wpready){
+               openPrintWindow();
+            } else {
+               webprint.checkRelay();
+               console.log("Print applet connection not established...trying to reconnect");
+            }
             setTimeout(function () {
                 wpwindow.postMessage(JSON.stringify(data), "*");
             }, 220);
@@ -58,7 +63,9 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     }
 
     var wpwindow;
+    var wpready = false;
     function openPrintWindow() {
+        wpready = false;
         wpwindow = window.open("http://" + curset.recip + ":" + curset.rectcpport + "/printwindow", 'WebPrintService');
         wpwindow.blur();
         window.focus();
@@ -66,7 +73,7 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
 
     var wptimeOut;
     this.checkRelay = function () {
-        if (wpwindow && wpwindow.open) {
+        if (wpwindow && !wpwindow.closed) {
             wpwindow.close();
         }
         window.addEventListener("message", handleWebPrintMessage, false);
@@ -80,6 +87,7 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
         switch (event.data.a) {
             case "init":
                 clearTimeout(wptimeOut);
+                wpready = true;
                 sendAppletRequest({a:"init"});
                 break;
             case "response":
@@ -100,12 +108,15 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
                 if (response.hasOwnProperty("ready")){
                     if (defReadyCb instanceof Function) defReadyCb();
                 }
+                break;
+            case "error": // cannot contact print applet from relay window
+                webprint.checkRelay();
         }
         //alert("The Web Printing service has been loaded in a new tab, keep it open for faster printing.");
     }
 
     function dispatchWebPrint() {
-        var answer = confirm("Would you like to open/install the printing app?");
+        var answer = confirm("Cannot communicate with the printing app.\nWould you like to open/install the printing app?");
         if (answer) {
             window.open("/assets/libs/WebPrint.jar", '_blank');
         }
