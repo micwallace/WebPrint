@@ -67,12 +67,15 @@ import qz.json.JSONObject;
  */
 class Server {
 
+    private Main app;
     private RequestListenerThread thread;
     static JFrame jframe;
 
-    public Server() {
+    public Server(Main app) {
+        this.app = app;
         jframe = new JFrame();
         jframe.setAlwaysOnTop(true);
+        jframe.setAutoRequestFocus(true);
         try {
             thread = new RequestListenerThread(8080, this);
         } catch (IOException ex) {
@@ -92,17 +95,16 @@ class Server {
     }
 
     // Server threads
-    static class HttpHandler implements HttpRequestHandler {
+    class HttpHandler implements HttpRequestHandler {
 
         Server context;
         PrintManager pManager;
-        AccessControl acl;
 
         public HttpHandler(Server cont) {
             super();
             context = cont;
             pManager = new PrintManager();
-            acl = new AccessControl();
+            
         }
 
         @Override
@@ -142,7 +144,7 @@ class Server {
                             cookie = jrequest.getString("cookie");
                         }
                         if (action.equals("init")) {
-                            if (!acl.isAllowed(origin, cookie)) {
+                            if (!app.acl.isAllowed(origin, cookie)) {
                                 System.out.println("Authentication needed...");
                                 // Not authenticated, show dialog
                                 int dialogButton = JOptionPane.YES_NO_OPTION;
@@ -151,7 +153,7 @@ class Server {
                                 if (dialogResult == JOptionPane.YES_OPTION) {
                                     // add to acl and return cookie
                                     String ncookie = (UUID.randomUUID()).toString();
-                                    acl.add(origin, ncookie);
+                                    app.acl.add(origin, ncookie);
                                     responseJson.put("cookie", ncookie);
                                     responseJson.put("ready", true);
                                 } else {
@@ -161,7 +163,7 @@ class Server {
                                 responseJson.put("ready", true);
                             }
                         } else {
-                            if (acl.isAllowed(origin, cookie)) {
+                            if (app.acl.isAllowed(origin, cookie)) {
                                 if (action.equals("listprinters")) {
                                     PrintServiceMatcher.getPrinterArray(true);
                                     String[] printerArray = PrintServiceMatcher.getPrinterListing().split(",");
@@ -224,7 +226,7 @@ class Server {
 
     }
 
-    static class RequestListenerThread extends Thread {
+    class RequestListenerThread extends Thread {
 
         private final ServerSocket serversocket;
         private final HttpParams params;

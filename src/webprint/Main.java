@@ -19,6 +19,7 @@
 package webprint;
 
 import java.awt.AWTException;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -36,7 +37,8 @@ import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
-import javax.swing.JOptionPane;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.lantern.AppIndicatorTray;
@@ -45,25 +47,42 @@ import org.lantern.AppIndicatorTray;
  *
  * @author michael
  */
-public class Main {
+public class Main extends javax.swing.JFrame {
     
     private Server htserver;
+    public AccessControl acl;
+    JPanel rootPane;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         Main app = new Main();
-        app.HideToSystemTray();
+        app.initSystemTray();
         app.startServer();
     }
     
+    private JFrame settingFrame;
+    public Main(){
+        acl = new AccessControl();
+        this.setName("WebPrint");
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage("img/webprinticonsmall.png"));
+        rootPane = (JPanel) this.getRootPane().getContentPane();
+        rootPane.setVisible(true);
+        settingFrame = new SettingsFrame(this);
+        settingFrame.setLocationRelativeTo(null);
+    }
+    
     private void startServer(){
-        htserver = new Server();
+        htserver = new Server(this);
     }
 
     private void stopServer(){
         htserver.stop();
+    }
+    
+    public void showSettings(){
+        settingFrame.setVisible(true);
     }
     
     // System tray stuff
@@ -72,13 +91,14 @@ public class Main {
      * @author Mohammad Faisal ermohammadfaisal.blogspot.com
      * facebook.com/m.faisal6621
      *  thanks Mohammad!
+     * modified by micwallace for linux system tray
      */
     ButtonGroup traymgrp;
     TrayIcon trayIcon;
     SystemTray tray;
     AppIndicatorTray unitytray = null;
 
-    private void HideToSystemTray() {
+    private void initSystemTray() {
         
         // Set app look and feel
         try {
@@ -112,6 +132,21 @@ public class Main {
             }
             unitytray = new AppIndicatorTray(this);
             unitytray.createTray();
+            // linux notification bubble
+            String[] notifyCmd = { "/usr/bin/notify-send",
+                 "-t",
+                 "10000",
+                 "-i",
+                 path,
+                 "-a",
+                 "WebPrint",
+                 "WebPrint",
+                 "The WebPrint Server is running"};
+            try {
+                Runtime.getRuntime().exec(notifyCmd);
+            } catch (IOException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
             System.out.println("creating ubuntu systemtray instance");
             return;
         } else if (SystemTray.isSupported()) {
@@ -130,25 +165,20 @@ public class Main {
                 }
             };
 
-            /*ActionListener openListener = new ActionListener() {
+            ActionListener openListener = new ActionListener() {
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //setVisible(true);
-                    //setExtendedState(JFrame.NORMAL);
-                    JOptionPane.showMessageDialog(null, "Settings currently not implemented.", "Error",
-                                    JOptionPane.ERROR_MESSAGE);
+                    showSettings();
                 }
-            };*/
+            };
             PopupMenu popup = new PopupMenu(); 
-            /*MenuItem menuItem = new MenuItem("Settings..."); 
-            menuItem.addActionListener(openListener);
-            popup.add(menuItem); */
-            MenuItem menuItem = new MenuItem("Exit");
-            menuItem.addActionListener(exitListener);
-            popup.add(menuItem);
-            // swing tray icon
-            //genTrayMenu();
+            MenuItem openItem = new MenuItem("Settings..."); 
+            openItem.addActionListener(openListener);
+            popup.add(openItem);
+            MenuItem exitItem = new MenuItem("Exit");
+            exitItem.addActionListener(exitListener);
+            popup.add(exitItem);
 
             trayIcon = new TrayIcon(image);
             trayIcon.setPopupMenu(popup);
@@ -159,48 +189,11 @@ public class Main {
             } catch (AWTException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
+            trayIcon.displayMessage("WebPrint", "The WebPrint server is running", TrayIcon.MessageType.INFO);
             
         } else {
             System.out.println("system tray not supported");
             return;
         }
-        /*addWindowStateListener(new WindowStateListener() {
-
-            @Override
-            public void windowStateChanged(WindowEvent e) {
-                if (e.getNewState() == ICONIFIED) {
-                    setVisible(false);
-                    setExtendedState(JFrame.ICONIFIED);
-                    System.out.println("Minimized to SystemTray");
-                }
-                if (e.getNewState() == 7) {
-                    setVisible(false);
-                    setExtendedState(JFrame.ICONIFIED);
-                    System.out.println("Minimized to SystemTray");
-                }
-                if (e.getNewState() == MAXIMIZED_BOTH) {
-                    setVisible(true);
-                    setExtendedState(JFrame.NORMAL);
-                }
-                if (e.getNewState() == NORMAL) {
-                    setVisible(true);
-                    setExtendedState(JFrame.NORMAL);
-                }
-            }
-        });
-        setIconImage(Toolkit.getDefaultToolkit().getImage("img/RGBsmall.jpg"));
-        // hide when exit button pressed on window
-        this.addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                setVisible(false);
-                System.out.println("Minimized to SystemTray");
-            }
-        });
-        //setVisible(true);
-        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);*/
     }
-    
-    
 }

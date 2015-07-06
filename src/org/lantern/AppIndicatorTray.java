@@ -12,6 +12,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import javax.swing.JOptionPane;
 import webprint.Main;
+import webprint.SettingsFrame;
 
 /**
  * Class for handling all system tray interactions. specialization for using app
@@ -78,7 +79,7 @@ public class AppIndicatorTray {
         libgtk.gtk_widget_set_sensitive(TitleItem, Gtk.FALSE);
         libgtk.gtk_menu_shell_append(menu, TitleItem);
         libgtk.gtk_widget_show_all(TitleItem);
-        /*openItem = libgtk.gtk_menu_item_new_with_label("Settings..."); // XXX i18n
+        openItem = libgtk.gtk_menu_item_new_with_label("Settings..."); // XXX i18n
         openItemCallback = new Gobject.GCallback() {
             @Override
             public void callback(Pointer instance, Pointer data) {
@@ -88,7 +89,7 @@ public class AppIndicatorTray {
         };
         libgobject.g_signal_connect_data(openItem, "activate", openItemCallback, null, null, 0);
         libgtk.gtk_menu_shell_append(menu, openItem);
-        libgtk.gtk_widget_show_all(openItem);*/
+        libgtk.gtk_widget_show_all(openItem);
         
         
         quitItem = libgtk.gtk_menu_item_new_with_label("Quit"); // XXX i18n
@@ -153,10 +154,8 @@ public class AppIndicatorTray {
     }
 
     private void openDashboard() {
-        System.out.println("openDashboard called.");
-        //app.setVisible(true);
-        //app.setExtendedState(JFrame.NORMAL);
-        JOptionPane.showMessageDialog(null, "Settings currently not implemented.", "Error", JOptionPane.ERROR_MESSAGE);
+        System.out.println("Open settings called");
+        app.showSettings();
     }
 
     private void quit() {

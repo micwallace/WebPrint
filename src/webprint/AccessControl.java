@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import qz.json.JSONObject;
@@ -40,6 +42,15 @@ class AccessControl {
 
     public AccessControl() {
         this.loadAcl();
+    }
+    
+    public String[] getAcl(){
+        ArrayList<String> list = new ArrayList<String>();
+        Iterator iterator = aclmap.keys();
+        while (iterator.hasNext()){
+            list.add((String) iterator.next());
+        }
+        return list.toArray(new String[list.size()]);
     }
 
     private void loadAcl() {
