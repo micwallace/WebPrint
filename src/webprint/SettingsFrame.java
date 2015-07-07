@@ -5,6 +5,7 @@
  */
 package webprint;
 
+import java.awt.Color;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.util.logging.Level;
@@ -52,6 +53,7 @@ public class SettingsFrame extends javax.swing.JFrame {
         });
         if (!app.getServerError().equals("")){
             jLabel7.setText("Error: "+app.getServerError());
+            jLabel7.setForeground(Color.red);
         } else {
             jLabel7.setText("server running @ "+app.getAddress()+":"+app.getPort());
         }    

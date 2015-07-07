@@ -93,7 +93,7 @@ class Server {
         }
     }
     
-    static String fileloc = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent() + "/webprint.config";
+    static String fileloc = Main.getUserDataPath() + "/webprint.config";
     private void loadConfig(){
         File f = new File(fileloc);
         if (f.exists() && !f.isDirectory()) {
@@ -149,7 +149,7 @@ class Server {
     public void saveAddress(String address, int port) {
         if (address!=null)
             this.address = address;
-        if (port<1)
+        if (port>1)
             this.port = port;
         saveConfig();
     }

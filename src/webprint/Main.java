@@ -71,6 +71,34 @@ public class Main extends javax.swing.JFrame {
         settingFrame.setLocationRelativeTo(null);
     }
     
+    public static String getUserDataPath(){
+        String dataDirectory;
+        //here, we assign the name of the OS, according to Java, to a variable...
+        String OS = (System.getProperty("os.name")).toUpperCase();
+        //to determine what the workingDirectory is.
+        //if it is some version of Windows
+        if (OS.contains("WIN")){
+            //it is simply the location of the "AppData" folder
+            dataDirectory = System.getenv("AppData");
+            dataDirectory+= "\\WebPrint";
+        } else {
+            //Otherwise, we assume Linux or Mac
+            //in either case, we would start in the user's home directory
+            dataDirectory = System.getProperty("user.home");
+            //if we are on a Mac, we are not done, we look for "Application Support"
+            if (OS.contains("MAC")){
+                dataDirectory += "/Library/Application Support/WebPrint";
+            } else {
+                dataDirectory += "/.WebPrint";
+            }    
+        }
+        File dir = new File(dataDirectory);
+        if (!dir.exists()){  // Checks that Directory/Folder Doesn't Exists!  
+            dir.mkdir();
+        }
+        return dataDirectory;
+    }
+    
     private void startServer(){
         htserver = new Server(this);
     }
