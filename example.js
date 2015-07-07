@@ -118,7 +118,12 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     function dispatchWebPrint() {
         var answer = confirm("Cannot communicate with the printing app.\nWould you like to open/install the printing app?");
         if (answer) {
-            window.open("/assets/libs/WebPrint.jar", '_blank');
+            var installFile="WebPrint.jar";
+            if (navigator.appVersion.indexOf("Win")!=-1) installFile="WebPrint_windows_1_1.exe";
+            if (navigator.appVersion.indexOf("Mac")!=-1) installFile="WebPrint_macos_1_1.dmg";
+            if (navigator.appVersion.indexOf("X11")!=-1) installFile="WebPrint_unix_1_1.sh";
+            if (navigator.appVersion.indexOf("Linux")!=-1) installFile="WebPrint_unix_1_1.sh";
+            window.open("/yourinstalllocation/"+installFile, '_blank');
         }
     }
     
