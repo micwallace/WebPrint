@@ -10,9 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import javax.swing.JOptionPane;
 import webprint.Main;
-import webprint.SettingsFrame;
 
 /**
  * Class for handling all system tray interactions. specialization for using app

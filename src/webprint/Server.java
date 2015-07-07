@@ -19,15 +19,20 @@
 package webprint;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.apache.http.ConnectionClosedException;
@@ -70,27 +75,94 @@ class Server {
     private Main app;
     private RequestListenerThread thread;
     static JFrame jframe;
+    private String address = "127.0.0.1";
+    private int port = 8080;
+    public String error = "";
 
     public Server(Main app) {
         this.app = app;
         jframe = new JFrame();
         jframe.setAlwaysOnTop(true);
         jframe.setAutoRequestFocus(true);
+        loadConfig();
         try {
-            thread = new RequestListenerThread(8080, this);
+            start();
         } catch (IOException ex) {
+            error = ex.getMessage();
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    static String fileloc = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent() + "/webprint.config";
+    private void loadConfig(){
+        File f = new File(fileloc);
+        if (f.exists() && !f.isDirectory()) {
+            String content;
+            try {
+                content = readFile(fileloc, Charset.defaultCharset());
+                String[] parts = content.split(":");
+                address = parts[0];
+                port = Integer.valueOf(parts[1]);
+            } catch (IOException ex) {
+                Logger.getLogger(AccessControl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    private void saveConfig(){
+        FileWriter fw = null;
+        try {
+            File newTextFile = new File(fileloc);
+            fw = new FileWriter(newTextFile);
+            fw.write(address+":"+port);
+            fw.close();
+        } catch (IOException ex) {
+            Logger.getLogger(AccessControl.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fw.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AccessControl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    static String readFile(String path, Charset encoding)
+            throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
+    }
+    
+    public String getAddress(){
+        return address;
+    }
+    
+    public int getPort(){
+        return port;
+    }
+    
+    public final void start() throws IOException{
+        thread = new RequestListenerThread(address, port, this);
         thread.setDaemon(false);
         thread.start();
+        System.out.println("Server started");
+    }
+    
+    public void saveAddress(String address, int port) {
+        if (address!=null)
+            this.address = address;
+        if (port<1)
+            this.port = port;
+        saveConfig();
     }
 
-    public void stop() {
+    public void stop() throws IOException {
+        this.thread.serversocket.close();
+        this.thread.interrupt();
         try {
-            this.thread.serversocket.close();
-        } catch (IOException ex) {
+            this.thread.join();
+        } catch (InterruptedException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
+        this.thread = null;
         System.out.println("Server shutdown");
     }
 
@@ -228,12 +300,12 @@ class Server {
 
     class RequestListenerThread extends Thread {
 
-        private final ServerSocket serversocket;
+        public ServerSocket serversocket;
         private final HttpParams params;
         private final HttpService httpService;
 
-        public RequestListenerThread(int port, Server cont) throws IOException {
-            this.serversocket = new ServerSocket(port);
+        public RequestListenerThread(String address, int port, Server cont) throws IOException {
+            this.serversocket = new ServerSocket(port, 50, InetAddress.getByName(address));
             this.params = new SyncBasicHttpParams();
             this.params
                     .setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 5000)
@@ -265,7 +337,7 @@ class Server {
 
         @Override
         public void run() {
-            System.out.println("Listening on port " + this.serversocket.getLocalPort());
+            System.out.println("Listening on " + this.serversocket.getLocalSocketAddress());
             while (!Thread.interrupted()) {
                 try {
                     // Set up HTTP connection

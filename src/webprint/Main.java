@@ -19,7 +19,6 @@
 package webprint;
 
 import java.awt.AWTException;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -51,24 +50,23 @@ public class Main extends javax.swing.JFrame {
     
     private Server htserver;
     public AccessControl acl;
-    JPanel rootPane;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         Main app = new Main();
-        app.initSystemTray();
-        app.startServer();
     }
     
-    private JFrame settingFrame;
+    private final JFrame settingFrame;
     public Main(){
         acl = new AccessControl();
         this.setName("WebPrint");
         this.setIconImage(Toolkit.getDefaultToolkit().getImage("img/webprinticonsmall.png"));
-        rootPane = (JPanel) this.getRootPane().getContentPane();
-        rootPane.setVisible(true);
+        JPanel rootPanel = (JPanel) this.getRootPane().getContentPane();
+        rootPanel.setVisible(true);
+        initSystemTray();
+        startServer();
         settingFrame = new SettingsFrame(this);
         settingFrame.setLocationRelativeTo(null);
     }
@@ -76,9 +74,21 @@ public class Main extends javax.swing.JFrame {
     private void startServer(){
         htserver = new Server(this);
     }
+    
+    public String getServerError(){
+        return htserver.error;
+    }
 
-    private void stopServer(){
-        htserver.stop();
+    public void saveAddress(String address, int port) {
+        htserver.saveAddress(address, port);
+    }
+    
+    public String getAddress(){
+        return htserver.getAddress();
+    }
+    
+    public int getPort(){
+        return htserver.getPort();
     }
     
     public void showSettings(){
@@ -109,13 +119,12 @@ public class Main extends javax.swing.JFrame {
         }
         // Get distro
         String distro = "";
-        String[] cmd = {"/bin/sh", "-c", "cat /etc/*-release" };
         try {
             Process p = Runtime.getRuntime().exec("uname -a");
             BufferedReader bri = new BufferedReader(new InputStreamReader(p.getInputStream()));
             distro = bri.readLine();
         } catch (IOException e) {
-            e.printStackTrace();
+            
         }
         // Create applicable systray
         if (distro.contains("Ubuntu")){
@@ -148,7 +157,6 @@ public class Main extends javax.swing.JFrame {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
             System.out.println("creating ubuntu systemtray instance");
-            return;
         } else if (SystemTray.isSupported()) {
             System.out.println("creating normal systemtray instance");
             System.out.println("system tray supported");
@@ -193,7 +201,6 @@ public class Main extends javax.swing.JFrame {
             
         } else {
             System.out.println("system tray not supported");
-            return;
         }
     }
 }

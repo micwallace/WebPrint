@@ -25,7 +25,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +34,7 @@ import qz.json.JSONObject;
  *
  * @author michael
  */
-class AccessControl {
+public class AccessControl {
 
     static String fileloc = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent() + "/webprint_acl.json";
     JSONObject aclmap;

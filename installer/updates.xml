@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="">
-  <entry targetMediaFileId="39" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_unix_1_1.sh" newVersion="1.1" newMediaFileId="39" fileSize="4490785" bundledJre="" archive="false">
+  <entry targetMediaFileId="39" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_unix_1_1.sh" newVersion="1.1" newMediaFileId="39" fileSize="4494074" bundledJre="" archive="false">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="40" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_windows_1_1.exe" newVersion="1.1" newMediaFileId="40" fileSize="5285376" bundledJre="" archive="false">
+  <entry targetMediaFileId="40" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_windows_1_1.exe" newVersion="1.1" newMediaFileId="40" fileSize="5288448" bundledJre="" archive="false">
     <comment language="en" />
   </entry>
   <entry targetMediaFileId="41" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_macos_1_1.dmg" newVersion="1.1" newMediaFileId="41" fileSize="4948103" bundledJre="" archive="false">

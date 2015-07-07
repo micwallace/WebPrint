@@ -5,9 +5,7 @@ package webprint;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
@@ -46,7 +44,7 @@ public class RunOnSystemStartup {
         debug("RunOnSystemStartup.getStartupFile: osName=\""+osName+"\"");
         if (osName.startsWith("Windows")) {
             Process process=Runtime.getRuntime().exec("reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\" /v Startup");
-            BufferedReader in=new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String result="",line;
             while ((line=in.readLine())!=null) {
                 result+=line;
@@ -69,14 +67,15 @@ public class RunOnSystemStartup {
     /*
      * Methods
      */
-
     /**
-     * Returns whether this JAR file is installed to run on system startup.
+     * Returns whether this JAR file is installed to run on system startup
+     * @return 
+     * @throws java.lang.Exception
      */
     public static boolean isInstalled() throws Exception {
         return getStartupFile().exists();
     }
-
+    
     /**
      * Install the specified class from the current JAR file to run on system startup.
      *
@@ -117,6 +116,7 @@ public class RunOnSystemStartup {
 
     /**
      * Uninstall this JAR file from the system startup process.
+     * @throws java.lang.Exception
      */
     public static void uninstall() throws Exception {
     File startupFile=getStartupFile();
