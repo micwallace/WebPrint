@@ -93,7 +93,7 @@ class Server {
         }
     }
     
-    static String fileloc = Main.getUserDataPath() + "/webprint.config";
+    static String fileloc = Main.getUserDataPath() + "webprint.config";
     private void loadConfig(){
         File f = new File(fileloc);
         if (f.exists() && !f.isDirectory()) {
