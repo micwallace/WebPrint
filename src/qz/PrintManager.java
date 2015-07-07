@@ -769,6 +769,43 @@ public class PrintManager {
         }
         return false;
     }
+    
+    public boolean printRawTcp(String socket) {
+        try {
+            String[] parts = socket.split(":");
+            getPrintRaw().setOutputSocket(parts[0], Integer.valueOf(parts[1]));
+            if (isRawAutoSpooling()) {
+                LinkedList<ByteArrayBuilder> pages = ByteUtilities.splitByteArray(
+                        getPrintRaw().getByteArray(),
+                        endOfDocument.getBytes(charset.name()),
+                        documentsPerSpool);
+                //FIXME:  Remove this debug line
+                LogIt.log(Level.INFO, "Automatically spooling to "
+                        + pages.size() + " separate print job(s)");
+
+                for (ByteArrayBuilder b : pages) {
+                    logAndPrint(getPrintRaw(), b.getByteArray());
+                }
+
+                if (!reprint) {
+                    getPrintRaw().clear();
+                }
+            } else {
+                logAndPrint(getPrintRaw());
+            }
+            return true;
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
+            this.set(ex);
+        } catch (IOException ex) {
+            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
+            this.set(ex);
+        } catch (PrintException | InterruptedException ex) {
+            this.set(ex);
+            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
 
     /**
      * Creates the print service by iterating through printers until finding

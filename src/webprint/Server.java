@@ -260,7 +260,13 @@ class Server {
                                         }
                                     } else if (jrequest.has("port")) {
                                         if (!pManager.send(jrequest.getString("port"), jrequest.getString("data"))) {
-                                            System.out.println(jrequest.getString("port"));
+                                            //System.out.println(jrequest.getString("port"));
+                                            responseJson.put("error", "Failed to print: " + pManager.getException());
+                                        }
+                                    } else if (jrequest.has("socket")) {
+                                        pManager.append64(jrequest.getString("data"));
+                                        if (!pManager.printRawTcp(jrequest.getString("socket"))) {
+                                            //System.out.println(jrequest.getString("socket"));
                                             responseJson.put("error", "Failed to print: " + pManager.getException());
                                         }
                                     } else {

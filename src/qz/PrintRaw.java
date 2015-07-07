@@ -74,8 +74,8 @@ public class PrintRaw {
     private final AtomicReference<Charset> charset = new AtomicReference<Charset>(Charset.defaultCharset());
     private final AtomicReference<String> jobName = new AtomicReference<String>("QZ-PRINT Raw Printing");
     private final AtomicReference<String> outputPath = new AtomicReference<String>(null);
-    private final AtomicReference<String> socketHost = new AtomicReference<String>(null);
-    private final AtomicReference<Integer> socketPort = new AtomicReference<Integer>(null);
+    private AtomicReference<String> socketHost = new AtomicReference<String>(null);
+    private AtomicReference<Integer> socketPort = new AtomicReference<Integer>(null);
     private final AtomicBoolean alternatePrint = new AtomicBoolean(false);
 
     public PrintRaw() {
@@ -160,6 +160,8 @@ public class PrintRaw {
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
         out.write(getRawCmds().getByteArray());
         socket.close();
+        socketHost = new AtomicReference<>(null);
+        socketPort = new AtomicReference<>(null);
         return true;
     }
 

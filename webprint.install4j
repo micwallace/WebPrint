@@ -24,8 +24,6 @@
     <entries>
       <fileEntry mountPoint="25" file="/home/michael/NetBeansProjects/WebPrint/store/WebPrint.jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="25" file="/home/michael/NetBeansProjects/WebPrint/src/webprint/img/webprinticonsmall.png" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="25" file="/home/michael/NetBeansProjects/WebPrint/webprint_acl.json" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="25" file="/home/michael/NetBeansProjects/WebPrint/webprint.config" overwriteMode="4" shared="true" fileMode="774" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="false" overrideUninstallMode="false" />
     </entries>
     <components />
   </files>
