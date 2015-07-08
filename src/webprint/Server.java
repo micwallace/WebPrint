@@ -63,6 +63,7 @@ import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
 import qz.PrintManager;
 import qz.PrintServiceMatcher;
+import qz.exception.NullPrintServiceException;
 import qz.json.JSONArray;
 import qz.json.JSONObject;
 
@@ -265,10 +266,14 @@ class Server {
                                         }
                                     } else if (jrequest.has("socket")) {
                                         pManager.append64(jrequest.getString("data"));
-                                        if (!pManager.printRawTcp(jrequest.getString("socket"))) {
-                                            //System.out.println(jrequest.getString("socket"));
-                                            responseJson.put("error", "Failed to print: " + pManager.getException());
-                                        }
+                                        String[] parts = jrequest.getString("socket").split(":");
+                                        try {
+                                            pManager.printToHost(parts[0], parts[1]);
+                                        } catch (NumberFormatException | IOException | NullPrintServiceException ex) {
+                                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                                                //System.out.println(jrequest.getString("socket"));
+                                            responseJson.put("error", "Failed to print: " + ex.getMessage());
+                                        }    
                                     } else {
                                         responseJson.put("error", "No printer specified in the request.");
                                     }

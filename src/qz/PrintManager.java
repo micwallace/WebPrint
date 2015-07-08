@@ -416,34 +416,35 @@ public class PrintManager {
         printToFile(null);
     }
 
-    public void printToHost(String host) {
+    public void printToHost(String host) throws IOException, NullPrintServiceException {
         printToHost(host, 9100);
     }
 
-    public void printToHost(String host, String port) {
+    public void printToHost(String host, String port) throws NumberFormatException, IOException, NullPrintServiceException {
         try {
-            printToHost(host, Integer.parseInt(host));
-        } catch (Throwable t) {
-            this.set(t);
+            printToHost(host, Integer.parseInt(port));
+        } catch (NumberFormatException | IOException | NullPrintServiceException ex) {
+            this.set(ex);
+            throw ex;
         }
     }
 
-    public void printToHost(String host, int port) {
+    public void printToHost(String host, int port) throws IOException, NullPrintServiceException {
         if (!ByteUtilities.isBlank(host) && port > 0) {
             getPrintRaw().setOutputSocket(host, port);
             try {
                 getPrintRaw().printToSocket();
             } catch (IOException ex) {
                 Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
             }
-        } else {
-            this.set(new NullPrintServiceException("Invalid port or host specified.  "
-                    + "Port values must be non-zero posistive integers.  "
-                    + "Host values must not be empty"));
             this.clear();
-            return;
+        } else {
+            this.clear();
+            throw new NullPrintServiceException("Invalid port or host specified.  "
+                    + "Port values must be non-zero posistive integers.  "
+                    + "Host values must not be empty");
         }
-
     }
 
     public void printToFile(String outputPath) {
@@ -737,43 +738,6 @@ public class PrintManager {
             return false;
         }
         try {
-            if (isRawAutoSpooling()) {
-                LinkedList<ByteArrayBuilder> pages = ByteUtilities.splitByteArray(
-                        getPrintRaw().getByteArray(),
-                        endOfDocument.getBytes(charset.name()),
-                        documentsPerSpool);
-                //FIXME:  Remove this debug line
-                LogIt.log(Level.INFO, "Automatically spooling to "
-                        + pages.size() + " separate print job(s)");
-
-                for (ByteArrayBuilder b : pages) {
-                    logAndPrint(getPrintRaw(), b.getByteArray());
-                }
-
-                if (!reprint) {
-                    getPrintRaw().clear();
-                }
-            } else {
-                logAndPrint(getPrintRaw());
-            }
-            return true;
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
-            this.set(ex);
-        } catch (IOException ex) {
-            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
-            this.set(ex);
-        } catch (PrintException | InterruptedException ex) {
-            this.set(ex);
-            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-    
-    public boolean printRawTcp(String socket) {
-        try {
-            String[] parts = socket.split(":");
-            getPrintRaw().setOutputSocket(parts[0], Integer.valueOf(parts[1]));
             if (isRawAutoSpooling()) {
                 LinkedList<ByteArrayBuilder> pages = ByteUtilities.splitByteArray(
                         getPrintRaw().getByteArray(),

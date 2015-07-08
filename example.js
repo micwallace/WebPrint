@@ -27,6 +27,11 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
         var request = {a: "printraw", data: data, port: port};
         sendAppletRequest(request);
     };
+    
+    this.printTcp = function (data, socket) {
+        var request = {a: "printraw", socket: socket, data: data};
+        sendAppletRequest(request);
+   };
 
     this.printHtml = function (data, printer) {
         var request = {a: "printhtml", printer: printer, data: data};
