@@ -37,9 +37,13 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
         var request = {a: "printhtml", printer: printer, data: data};
         sendAppletRequest(request);
     };
-
-    this.openPort = function (port) {
-        var request = {a: "openport", port: port, settings: {baud: curset.recbaud, databits: curset.recdatabits, stopbits: curset.recstopbits, parity: curset.recparity, flow: curset.recflow}};
+    /*
+     * Opens a port using the specified settings
+     * @param port String eg. COM1 / TTY0
+     * @param settings Object eg. {baud:9600, databits:8, stopbits:1, parity:even, flow:"none"}
+     */
+    this.openPort = function (port, settings) {
+        var request = {a: "openport", port: port, settings: {baud: settings, databits: curset.recdatabits, stopbits: curset.recstopbits, parity: curset.recparity, flow: curset.recflow}};
         sendAppletRequest(request);
     };
 
