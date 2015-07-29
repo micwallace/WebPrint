@@ -24,7 +24,7 @@ Thanks to the postMessage API I was able to securely avoid these restrictions.
 After that WebPrint was just a matter of time.
 
 # Thanks
-A big thanks to the qz-print guys for allowing this project to happen and Install4j for providing their excellent cross platform installer.
+A big thanks to the qz-print guys for allowing this project to happen and EJ Technologies for providing their excellent cross platform installer.
 
 ![Install4j](https://www.ej-technologies.com/images/product_banners/install4j_large.png)
 
