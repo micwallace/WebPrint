@@ -43,7 +43,7 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
      * @param settings Object eg. {baud:9600, databits:8, stopbits:1, parity:even, flow:"none"}
      */
     this.openPort = function (port, settings) {
-        var request = {a: "openport", port: port, settings: {baud: settings, databits: curset.recdatabits, stopbits: curset.recstopbits, parity: curset.recparity, flow: curset.recflow}};
+        var request = {a: "openport", port: port, settings: settings};
         sendAppletRequest(request);
     };
 
