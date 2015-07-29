@@ -75,7 +75,7 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     var wpready = false;
     function openPrintWindow() {
         wpready = false;
-        wpwindow = window.open("http://" + curset.recip + ":" + curset.rectcpport + "/printwindow", 'WebPrintService');
+        wpwindow = window.open("http://127.0.0.1:8080/printwindow", 'WebPrintService');
         wpwindow.blur();
         window.focus();
     }
@@ -91,7 +91,7 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     };
 
     function handleWebPrintMessage(event) {
-        if (event.origin != "http://" + curset.recip + ":" + curset.rectcpport)
+        if (event.origin != "http://127.0.0.1:8080")
             return;
         switch (event.data.a) {
             case "init":
