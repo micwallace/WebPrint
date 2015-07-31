@@ -1,5 +1,6 @@
 # WebPrint
 ![WebPrint](https://github.com/micwallace/WebPrint/blob/master/src/webprint/img/webprinticon.png)
+
 Print directly to printers using Javascript.
 
 WebPrint is a fork of QZ-print: https://github.com/qzindustries/qz-print
@@ -10,7 +11,8 @@ This differs from QZ-print, that uses Java Web Start and the Java deployment fra
 The Java deployment framework is set to be removed in early 2015, I wanted to find another way to use QZ-print, which provides a seamless printing experience for web applications.
 
 If WebPrint has helped with your project, please donate to support it's future development.
-->[![Donate to WebPrint](https://www.paypalobjects.com/en_AU/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7JBL64AV5XDWG)<-
+
+[![Donate to WebPrint](https://www.paypalobjects.com/en_AU/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7JBL64AV5XDWG)
 
 # HTTPS usage
 If you site uses HTTPS, requests to HTTP server are almost certainly blocked by default due to mixed-content restrictions.
