@@ -1,4 +1,5 @@
 # WebPrint
+![WebPrint](https://github.com/micwallace/WebPrint/blob/master/src/webprint/img/webprinticon.png)
 Print directly to printers using Javascript.
 
 WebPrint is a fork of QZ-print: https://github.com/qzindustries/qz-print
@@ -8,11 +9,14 @@ This differs from QZ-print, that uses Java Web Start and the Java deployment fra
 
 The Java deployment framework is set to be removed in early 2015, I wanted to find another way to use QZ-print, which provides a seamless printing experience for web applications.
 
+If WebPrint has helped with your project, please donate to support it's future development.
+->[![Donate to WebPrint](https://www.paypalobjects.com/en_AU/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7JBL64AV5XDWG)<-
+
 # HTTPS usage
 If you site uses HTTPS, requests to HTTP server are almost certainly blocked by default due to mixed-content restrictions.
 Thankfully, WebPrint uses an innovative solution to avoid this by using an intermediary browser tab/window and the postMessage API.
 This negates the need for end-users to change their browser settings.
-For an example on how to use this feature, see example.js in the project.
+For an example on how to use this feature, see example.html in the project. Note that the example prints ESC/P formatted data which may not be compatible with all printers.
 
 # How this came about
 Mid last year I developed an android applet that essentially accepts http requests and forwards them to the specified socket or network printer.

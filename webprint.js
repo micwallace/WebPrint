@@ -146,7 +146,6 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     return this;
 };
 
-var webprint = new WebPrint(true, function(ports){console.log(ports);}, function(printers){console.log(printers);}, function(){webprint.requestPorts(); webprint.requestPrinters();});
-webprint.print("test", "someprinter");
+
 
 
