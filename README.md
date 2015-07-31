@@ -32,6 +32,6 @@ After that WebPrint was just a matter of time.
 # Thanks
 A big thanks to the qz-print guys for allowing this project to happen and EJ Technologies for providing their excellent cross platform installer.
 
-![Install4j](https://www.ej-technologies.com/images/product_banners/install4j_large.png)
+[![Install4j](https://www.ej-technologies.com/images/product_banners/install4j_large.png)](http://www.ej-technologies.com/products/install4j/overview.html)
 
 [Install4j: Multi-platform installer builder](http://www.ej-technologies.com/products/install4j/overview.html)
