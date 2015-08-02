@@ -10,6 +10,8 @@ This differs from QZ-print, that uses Java Web Start and the Java deployment fra
 
 The Java deployment framework is set to be removed in early 2015, I wanted to find another way to use QZ-print, which provides a seamless printing experience for web applications.
 
+See an example.html/webprint.js for usage or [click here](https://wallaceit.com.au/webprint/example.html) for a live version of the example.
+
 If WebPrint has helped with your project, please donate to support it's future development.
 
 [![Donate to WebPrint](https://www.paypalobjects.com/en_AU/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7JBL64AV5XDWG)

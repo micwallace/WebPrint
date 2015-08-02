@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <!--
 * This file is part of WebPrint
 * 
@@ -16,11 +15,13 @@
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * Lesser General Public License for more details.
 -->
+<!DOCTYPE html>
 <html>
     <head>
         <title>WebPrint ESC/P Example</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="webprint.js"></script>
         <script>
             var populatePrinters = function(printers){
@@ -28,7 +29,7 @@
                 for (var i in printers){
                      printerlist.append('<option value="'+printers[i]+'">'+printers[i]+'</option>');
                 }     
-            }
+            };
             var populatePorts = function(ports){
                 var portlist = $("#portlist");
                 for (var i in ports){
@@ -36,12 +37,12 @@
                 }  
                 if ($("#portlist option").length)
                     webprint.openPort($("#portlist option:first-child").val(), {baud:"9600", databits:"8", stopbits:"1", parity:"1", flow:"none"});   
-            }    
+            };
 
-            window.webprint = new WebPrint(true, populatePorts, populatePrinters, function(){
+            webprint = new WebPrint(true, populatePorts, populatePrinters, function(){
                 webprint.requestPorts(); 
                 webprint.requestPrinters();
-                getESCPImageString("http://i.imgur.com/8h4GJcz.png", function (imgdata) {
+                getESCPImageString("https://wallaceit.com.au/webprint/wallaceit_receipt_logo.png", function (imgdata) {
                  imgData = imgdata;
                  console.log("image loaded");
                 });
@@ -49,9 +50,10 @@
 
             // ESC/P receipt generation
             var imgData = '';
-            window.getEscSample = function(cut){
+            getEscSample = function(cut, image){
                 var data = '';
-                data+= imgData; // add the logo
+                if (image)
+                    data+= imgData; // add the logo
                 data+= esc_init + esc_a_c + esc_double + 'Heading Text' + "\n" + font_reset; // heading centered example
                 data+= esc_bold_on + 'bold text' + "\n"  + font_reset; // bold example
                 data+= 'standard text' + "\n"; // normal
@@ -66,7 +68,7 @@
                     data+= "\n\n\n\n" + gs_cut + "\r";
 
                 return data;
-            }
+            };
 
             var esc_init = "\x1B" + "\x40"; // initialize printer
             var esc_p = "\x1B" + "\x70" + "\x30"; // open drawer
@@ -178,19 +180,34 @@
                 // Restore the line spacing to the default of 30 dots.
                 appendBytes(0x1B, 0x33, 30);
                 // convert the array into a bytestring and return
-                final = WPOS.util.ArrayToByteStr(final);
+                final = ArrayToByteStr(final);
 
                 return final;
+            }
+
+            /**
+             * @return {string}
+             */
+            function ArrayToByteStr(array) {
+                var s = '';
+                for (var i = 0; i < array.length; i++) {
+                    s += String.fromCharCode(array[i]);
+                }
+                return s;
             }
         </script>
     </head>
     <body>
         <div>
+            <p>
+                This example shows how you can use webprint to print to ESC/P printers.
+            </p>
             Printers: <select id="printerlist"></select>
-            <button onclick="webprint.printRaw(btoa(getEscSample($('#cutter').is(':checked'))), $('#printerlist').val());">Print</button><br/>
+            <button onclick="webprint.printRaw(btoa(getEscSample($('#cutter').is(':checked'),$('#image').is(':checked'))), $('#printerlist').val());">Print</button><br/>
             Ports: <select onchange='webprint.openPort($("#portlist").val(), {baud:"9600", databits:"8", stopbits:"1", parity:"1", flow:"none"});' id="portlist"></select>
-            <button onclick="webprint.printSerial(btoa(getEscSample($('#cutter').is(':checked'))), $('#portlist').val());">Print Serial</button><br/>
-            Cutter: <input id="cutter" type="checkbox" checked="checked"/>
+            <button onclick="webprint.printSerial(btoa(getEscSample($('#cutter').is(':checked'),$('#image').is(':checked'))), $('#portlist').val());">Print Serial</button><br/>
+            Cutter: <input id="cutter" type="checkbox" checked="checked"/><br/>
+            Image: <input id="image" type="checkbox" checked="checked"/>
         </div>
     </body>
 </html>
