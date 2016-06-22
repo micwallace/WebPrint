@@ -16,24 +16,41 @@
  * Lesser General Public License for more details.
  *
  */
-var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
+var WebPrint = function (init, opt) {
+    var options = {
+        relayHost: "127.0.0.1",
+        relayPort: "8080",
+        listPrinterCallback: null,
+        listPortsCallback: null,
+        readyCallback: null
+    };
+
+    $.extend(options, opt);
 
     this.printRaw = function (data, printer) {
-        var request = {a: "printraw", data: data, printer: printer};
+        var request = {a: "printraw", printer: printer, data: btoa(data)};
         sendAppletRequest(request);
     };
 
     this.printSerial = function (data, port) {
-        var request = {a: "printraw", data: data, port: port};
+        if (isAndroid){
+            alert("Serial port printing is not available in Android.");
+            return;
+        }
+        var request = {a: "printraw", port: port, data: btoa(data)};
         sendAppletRequest(request);
     };
     
     this.printTcp = function (data, socket) {
-        var request = {a: "printraw", socket: socket, data: data};
+        var request = {a: "printraw", socket: socket, data: btoa(data)};
         sendAppletRequest(request);
-   };
+    };
 
     this.printHtml = function (data, printer) {
+        if (isAndroid){
+            alert("HTML printing is not available in Android.");
+            return;
+        }
         var request = {a: "printhtml", printer: printer, data: data};
         sendAppletRequest(request);
     };
@@ -52,7 +69,8 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     };
 
     this.requestPorts = function () {
-        sendAppletRequest({a: "listports"});
+        if (!isAndroid)
+            sendAppletRequest({a: "listports"});
     };
 
     function sendAppletRequest(data) {
@@ -75,7 +93,7 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     var wpready = false;
     function openPrintWindow() {
         wpready = false;
-        wpwindow = window.open("http://127.0.0.1:8080/printwindow", 'WebPrintService');
+        wpwindow = window.open("http://"+options.relayHost+":"+options.relayPort+"/printwindow", 'WebPrintService');
         wpwindow.blur();
         window.focus();
     }
@@ -91,7 +109,7 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     };
 
     function handleWebPrintMessage(event) {
-        if (event.origin != "http://127.0.0.1:8080")
+        if (event.origin != "http://"+options.relayHost+":"+options.relayPort)
             return;
         switch (event.data.a) {
             case "init":
@@ -102,11 +120,11 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
             case "response":
                 var response = JSON.parse(event.data.json);
                 if (response.hasOwnProperty('ports')) {
-                    if (defPortCb instanceof Function)
-                        defPortCb(response.ports);
+                    if (options.listPortsCallback instanceof Function)
+                        options.listPortsCallback(response.ports);
                 } else if (response.hasOwnProperty('printers')) {
-                    if (defPrinterCb instanceof Function)
-                        defPrinterCb(response.printers);
+                    if (options.listPrinterCallback instanceof Function)
+                        options.listPrinterCallback(response.printers);
                 } else if (response.hasOwnProperty('error')) {
                     alert(response.error);
                 }
@@ -115,7 +133,7 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
                     localStorage.setItem("webprint_auth", response.cookie);
                 }
                 if (response.hasOwnProperty("ready")){
-                    if (defReadyCb instanceof Function) defReadyCb();
+                    if (options.readyCallback instanceof Function) options.readyCallback();
                 }
                 break;
             case "error": // cannot contact print applet from relay window
@@ -127,6 +145,10 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     function dispatchWebPrint() {
         var answer = confirm("Cannot communicate with the printing app.\nWould you like to open/install the printing app?");
         if (answer) {
+            if (isAndroid){
+                document.location.href = "https://wallaceit.com.au/playstore/webprint/index.php";
+                return;
+            }
             var installFile="WebPrint.jar";
             if (navigator.appVersion.indexOf("Win")!=-1) installFile="WebPrint_windows_1_1.exe";
             if (navigator.appVersion.indexOf("Mac")!=-1) installFile="WebPrint_macos_1_1.dmg";
@@ -140,6 +162,8 @@ var WebPrint = function (init, defPortCb, defPrinterCb, defReadyCb) {
     if (cookie==null){
         cookie = "";
     }
+
+    var isAndroid = navigator.appVersion.indexOf("Android")!=-1;
 
     if (init) this.checkRelay();
     
