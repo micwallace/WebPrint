@@ -216,7 +216,7 @@
     <p>
         Printers: <select id="printerlist"></select>
         <button onclick="webprint.requestPrinters();">Refresh</button><br/>
-        <button onclick="webprint.printRaw(esc_init+esc_p, $('#printerlist').val());">Cash Draw</button><br/>
+        <button onclick="webprint.printRaw(esc_init+esc_p+esc_init, $('#printerlist').val());">Cash Draw</button><br/>
         <button onclick="webprint.printRaw(getEscSample($('#cutter').is(':checked'),$('#image').is(':checked')), $('#printerlist').val());">Print</button><br/>
     </p>
 
@@ -224,14 +224,14 @@
     <p>
         Ports: <select onchange='webprint.openPort($("#portlist").val(), {baud:"9600", databits:"8", stopbits:"1", parity:"1", flow:"none"});' id="portlist"></select>
         <button onclick="webprint.requestPorts();">Refresh</button><br/>
-        <button onclick="webprint.printSerial(esc_init+esc_p, $('#portlist').val());">Cash Draw</button><br/>
+        <button onclick="webprint.printSerial(esc_init+esc_p+esc_init, $('#portlist').val());">Cash Draw</button><br/>
         <button onclick="webprint.printSerial(getEscSample($('#cutter').is(':checked'),$('#image').is(':checked')), $('#portlist').val());">Print Serial</button><br/>
     </p>
 
     <h4>Network Printing:</h4>
     <p>
         Host: <input id="tcphost" type="text" value="192.168.1.87" /> Port <input id="tcpport" type="text" size="5" value="9100" />
-        <button onclick="webprint.printTcp(esc_init+esc_p, $('#tcphost').val()+':'+$('#tcpport').val());">Cash Draw</button><br/>
+        <button onclick="webprint.printTcp(esc_init+esc_p+esc_init, $('#tcphost').val()+':'+$('#tcpport').val());">Cash Draw</button><br/>
         <button onclick="webprint.printTcp(getEscSample($('#cutter').is(':checked'),$('#image').is(':checked')), $('#tcphost').val()+':'+$('#tcpport').val());">Print Network</button><br/>
     </p>
 
