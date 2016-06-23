@@ -146,7 +146,7 @@ var WebPrint = function (init, opt) {
         var answer = confirm("Cannot communicate with the printing app.\nWould you like to open/install the printing app?");
         if (answer) {
             if (isAndroid){
-                document.location.href = "https://wallaceit.com.au/playstore/webprint/index.php";
+                deployAndroid();
                 return;
             }
             var installFile="WebPrint.jar";
@@ -154,8 +154,45 @@ var WebPrint = function (init, opt) {
             if (navigator.appVersion.indexOf("Mac")!=-1) installFile="WebPrint_macos_1_1.dmg";
             if (navigator.appVersion.indexOf("X11")!=-1) installFile="WebPrint_unix_1_1.sh";
             if (navigator.appVersion.indexOf("Linux")!=-1) installFile="WebPrint_unix_1_1.sh";
-            window.open("/yourinstalllocation/"+installFile, '_blank');
+            window.open("https://content.wallaceit.com.au/webprint/"+installFile, '_blank');
         }
+    }
+
+    function deployAndroid(){
+        if (isAndroidIntentSupported()){
+            deployAndroidChrome();
+        } else {
+            deployAndroidFirefox();
+        }
+        //document.location.href = "intent://#Intent;scheme=webprint;package=au.com.wallaceit.webprint;S.browser_fallback_url=https%3A%2F%2Fwallaceit.com.au%2Fplaystore%2Fwebprint;end";
+    }
+
+    function isAndroidIntentSupported() {
+        var isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+        if (isChrome) {
+            var version = parseInt(window.navigator.appVersion.match(/Chrome\/(\d+)\./)[1], 10);
+            return version >= 25;
+        } else {
+            return false;
+        }
+    }
+
+    function deployAndroidChrome(){
+        // this link needs to be clicked by the user
+        var html = '<div id="intent_link" style="position: fixed; top:40%; width: 120px; background-color: white; left:50%; margin-left: -60px; border: solid 2px rgb(75, 75, 75); font-family: Helvetica SansSerif sans-serif; text-align: center; padding: 5px;">' +
+            '<a onclick="window.location=\'intent://#Intent;scheme=webprint;package=au.com.wallaceit.webprint;S.browser_fallback_url=https%3A%2F%2Fwallaceit.com.au%2Fplaystore%2Fwebprint;end\'; document.getElementById(\'intent_link\').remove();">Click To Open WebPrint</a></div>';
+        document.body.innerHTML += html;
+    }
+
+    function deployAndroidFirefox() {
+        var timeout = setTimeout(function() {
+            window.location = "https://wallaceit.com.au/playstore/webprint";
+        }, 1000);
+        window.addEventListener("pagehide", function(evt) {
+            clearTimeout(timeout);
+        });
+
+        window.location = "webprint://open";
     }
     
     var cookie = localStorage.getItem("webprint_auth");

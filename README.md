@@ -16,6 +16,15 @@ If WebPrint has helped with your project, please donate to support it's future d
 
 [![Donate to WebPrint](https://www.paypalobjects.com/en_AU/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7JBL64AV5XDWG)
 
+# OS Compatability
+The main Webprint applet (hosted here) is compatible with Windows, OSX and Linux.
+
+Android support is provided via the Android app:
+https://github.com/micwallace/webprint-android
+NOTE: Serial and HTML printing is not currently supported on Android.
+
+The javacript library will prompt you to install or open the correct applet if it is not running.
+
 # HTTPS usage
 If you site uses HTTPS, requests to HTTP server are almost certainly blocked by default due to mixed-content restrictions.
 Thankfully, WebPrint uses an innovative solution to avoid this by using an intermediary browser tab/window and the postMessage API.
