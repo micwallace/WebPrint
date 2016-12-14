@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="">
-  <entry targetMediaFileId="41" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_macos_1_1.dmg" newVersion="1.1" newMediaFileId="41" fileSize="5271687" bundledJre="" archive="false">
+  <entry targetMediaFileId="39" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_unix_1_1_1.sh" newVersion="1.1.1" newMediaFileId="39" fileSize="5990361" bundledJre="" archive="false">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="39" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_unix_1_1.sh" newVersion="1.1" newMediaFileId="39" fileSize="4794225" bundledJre="" archive="false">
+  <entry targetMediaFileId="41" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_macos_1_1_1.dmg" newVersion="1.1.1" newMediaFileId="41" fileSize="6574215" bundledJre="" archive="false">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="40" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_windows_1_1.exe" newVersion="1.1" newMediaFileId="40" fileSize="6214144" bundledJre="" archive="false">
+  <entry targetMediaFileId="40" updatableVersionMin="" updatableVersionMax="" fileName="WebPrint_windows_1_1_1.exe" newVersion="1.1.1" newMediaFileId="40" fileSize="7500288" bundledJre="" archive="false">
     <comment language="en" />
   </entry>
 </updateDescriptor>

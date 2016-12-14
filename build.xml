@@ -70,6 +70,42 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <!--
+    ================
+    Build properties
+    ================
+    -->
+    <property name="src.dir"          location="src"/>
+    <property name="resources.dir"    location="lib"/>
+    <property name="build.dir"        location="build"/>
+    <property name="classes.dir"      location="${build.dir}/classes"/>
+    <property name="test.classes.dir" location="${build.dir}/test-classes"/>
+    <property name="ivy.reports.dir"  location="${build.dir}/ivy-reports"/>
+    <property name="test.reports.dir" location="${build.dir}/test-reports"/>
+    <property name="dist.dir"         location="${build.dir}/dist"/>
+
+    <property name="jar.file"       value="${dist.dir}/${ant.project.name}.jar"/>
+
+    <target name="-ivy-retrieve" xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+        <ivy:settings file="ivysettings.xml" />
+        <ivy:resolve/> <!-- Tell Ivy to resolve dependencies -->
+        <ivy:retrieve/> <!-- Load dependencies to the project -->
+        <pathconvert property="ivy.classpath.computed" dirsep="/" pathsep=":">
+            <path>
+                <fileset dir="lib" includes="*.jar"/>
+            </path>
+            <map from="${basedir}${file.separator}" to=""/>
+        </pathconvert>
+        <propertyfile file="nbproject/project.properties">
+            <entry operation="=" key="ivy.classpath" value="${ivy.classpath.computed}"/>
+        </propertyfile>
+    </target>
+    <target name="-pre-compile" depends="-ivy-retrieve"/>
+    <target name="-pre-compile-single" depends="-ivy-retrieve"/>
+    <target name="-post-clean">
+        <delete dir="lib"/>
+    </target>
+    
     <target name="package-for-store" depends="jar">
 
         <!-- Change the value of this property to be the name of your JAR,
@@ -90,8 +126,8 @@
         <mkdir dir="${store.dir}"/>
 
         <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
-            <zipgroupfileset dir="dist" includes="*.jar"/>
-            <zipgroupfileset dir="dist/lib" includes="*.jar"/>
+            <zipgroupfileset dir="${dist.dir}" includes="*.jar"/>
+            <zipgroupfileset dir="${dist.dir}/lib" includes="*.jar"/>
 
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>

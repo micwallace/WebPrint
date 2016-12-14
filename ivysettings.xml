@@ -1,0 +1,12 @@
+<ivysettings>
+   <settings defaultResolver="central" />
+   <resolvers>
+      <filesystem name='local'>
+        <artifact pattern='${ivy.settings.dir}/local-libs/[artifact].[ext]'/>
+      </filesystem>
+      <ibiblio name="central" m2compatible="true"/>
+   </resolvers>
+   <modules>
+      <module organisation="NA" resolver="local"/>
+   </modules>
+</ivysettings>

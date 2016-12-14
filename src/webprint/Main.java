@@ -18,29 +18,17 @@
  */
 package webprint;
 
-import java.awt.AWTException;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
+import dorkbox.systemTray.MenuEntry;
+import dorkbox.systemTray.SystemTray;
+import dorkbox.systemTray.SystemTrayMenuAction;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import org.lantern.AppIndicatorTray;
 
 /**
  *
@@ -125,17 +113,9 @@ public class Main extends javax.swing.JFrame {
     }
     
     // System tray stuff
-    /**
-     *
-     * @author Mohammad Faisal ermohammadfaisal.blogspot.com
-     * facebook.com/m.faisal6621
-     *  thanks Mohammad!
-     * modified by micwallace for linux system tray
-     */
     ButtonGroup traymgrp;
     TrayIcon trayIcon;
     SystemTray tray;
-    AppIndicatorTray unitytray = null;
 
     private void initSystemTray() {
         
@@ -146,90 +126,28 @@ public class Main extends javax.swing.JFrame {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
             System.out.println("Unable to set LookAndFeel");
         }
-        // Get distro
-        String distro = "";
-        try {
-            Process p = Runtime.getRuntime().exec("uname -a");
-            BufferedReader bri = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            distro = bri.readLine();
-        } catch (IOException e) {
-            
-        }
-        // Create applicable systray
-        if (distro.contains("Ubuntu")){
-            // check that icon exists
-            String path = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent()+"/webprinticonsmall.png";
-            File file = new File(path);
-            if (!file.exists()) {
-                InputStream link = (getClass().getResourceAsStream("img/webprinticonsmall.png"));
-                try {
-                    Files.copy(link, file.getAbsoluteFile().toPath());
-                } catch (IOException ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            unitytray = new AppIndicatorTray(this);
-            unitytray.createTray();
-            // linux notification bubble
-            String[] notifyCmd = { "/usr/bin/notify-send",
-                 "-t",
-                 "10000",
-                 "-i",
-                 path,
-                 "-a",
-                 "WebPrint",
-                 "WebPrint",
-                 "The WebPrint Server is running"};
-            try {
-                Runtime.getRuntime().exec(notifyCmd);
-            } catch (IOException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            System.out.println("creating ubuntu systemtray instance");
-        } else if (SystemTray.isSupported()) {
-            System.out.println("creating normal systemtray instance");
-            System.out.println("system tray supported");
-            tray = SystemTray.getSystemTray();
-
-            Image image = Toolkit.getDefaultToolkit().getImage(Main.class.getResource("img/webprinticonsmall.png"));
-            // AWT tray icon (doesn't allow radio buttons)
-            ActionListener exitListener = new ActionListener() {
-
+        // Setup system tray
+        SystemTray.FORCE_GTK2 = true;
+        tray = SystemTray.getSystemTray();
+        if (tray!=null){
+            tray.addMenuEntry("Settings", new SystemTrayMenuAction() {
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void onClick(SystemTray st, MenuEntry me) {
+                    showSettings();
+                }
+            });
+            
+            tray.addMenuEntry("Exit", new SystemTrayMenuAction() {
+                @Override
+                public void onClick(SystemTray st, MenuEntry me) {
                     System.out.println("Exiting....");
                     System.exit(0);
                 }
-            };
+            });
 
-            ActionListener openListener = new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    showSettings();
-                }
-            };
-            PopupMenu popup = new PopupMenu(); 
-            MenuItem openItem = new MenuItem("Settings..."); 
-            openItem.addActionListener(openListener);
-            popup.add(openItem);
-            MenuItem exitItem = new MenuItem("Exit");
-            exitItem.addActionListener(exitListener);
-            popup.add(exitItem);
-
-            trayIcon = new TrayIcon(image);
-            trayIcon.setPopupMenu(popup);
-            trayIcon.setImageAutoSize(true);
-            trayIcon.setToolTip("WebPrint");
-            try {
-                tray.add(trayIcon);
-            } catch (AWTException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            trayIcon.displayMessage("WebPrint", "The WebPrint server is running", TrayIcon.MessageType.INFO);
+            tray.setIcon(Main.class.getResource("img/webprinticonsmall.png"));
             
-        } else {
-            System.out.println("system tray not supported");
+            System.out.println(tray.getClass().getName());
         }
     }
 }

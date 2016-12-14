@@ -1,5 +1,5 @@
 # List of generated media files. The columns are tab-separated:
 # id | media file type | display name | media file path
-41	macos	Mac OS X Single Bundle	/home/michael/NetBeansProjects/WebPrint/installer/WebPrint_macos_1_1.dmg
-39	unix	Unix Installer	/home/michael/NetBeansProjects/WebPrint/installer/WebPrint_unix_1_1.sh
-40	windows	Windows	/home/michael/NetBeansProjects/WebPrint/installer/WebPrint_windows_1_1.exe
+39	unix	Unix Installer	/home/michael/NetBeansProjects/WebPrint/installer/WebPrint_unix_1_1_1.sh
+41	macos	Mac OS X Single Bundle	/home/michael/NetBeansProjects/WebPrint/installer/WebPrint_macos_1_1_1.dmg
+40	windows	Windows	/home/michael/NetBeansProjects/WebPrint/installer/WebPrint_windows_1_1_1.exe

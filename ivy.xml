@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+    <info organisation="au.com.wallaceit" module="webprint"/>
+    
+    <configurations>
+        <conf name="compile" description="Required to compile application"/>
+        <conf name="runtime" description="Additional run-time dependencies" extends="compile"/>
+        <conf name="test"    description="Required for test only" extends="runtime"/>
+    </configurations>
+    
+    <dependencies>
+        <!-- compile dependencies -->
+        <dependency org="com.dorkbox" name="SystemTray" rev="latest.release" conf="compile->default"/>
+        <!--<dependency org="org.scream3r" name="jssc" rev="latest.release" conf="compile->default"/>
+        <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5" conf="runtime->default"/>-->
+        <dependency org="com.google.inject" name="guice" rev="3.0" transitive="false" conf="compile->default"/>
+        <dependency org="org.apache.httpcomponents" name="httpcore" rev="latest.release" conf="compile->default"/>
+        <dependency org="com.googlecode.json-simple" name="json-simple" rev="latest.release" conf="compile->default"/>
+        
+        <dependency org="NA" name="jssc_qz" rev="" conf="compile->default"/>
+        <dependency org="NA" name="pdf-renderer_qz" rev="" conf="compile->default"/>
+    </dependencies>
+    
+</ivy-module>

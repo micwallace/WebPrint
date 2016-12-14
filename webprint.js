@@ -79,8 +79,9 @@ var WebPrint = function (init, opt) {
             if (wpready){
                openPrintWindow();
             } else {
-               webprint.checkRelay();
-               console.log("Print applet connection not established...trying to reconnect");
+                retry = true;
+                checkRelay();
+                console.log("Print applet connection not established...trying to reconnect");
             }
             setTimeout(function () {
                 wpwindow.postMessage(JSON.stringify(data), "*");
@@ -94,19 +95,27 @@ var WebPrint = function (init, opt) {
     function openPrintWindow() {
         wpready = false;
         wpwindow = window.open("http://"+options.relayHost+":"+options.relayPort+"/printwindow", 'WebPrintService');
-        wpwindow.blur();
+        if (wpwindow)
+            wpwindow.blur();
         window.focus();
     }
 
+    this.checkConnection = function () {
+        retry = true;
+        checkRelay();
+    };
+
     var wptimeOut;
-    this.checkRelay = function () {
+    var retry = true;
+    function checkRelay() {
         if (wpwindow && !wpwindow.closed) {
             wpwindow.close();
         }
         window.addEventListener("message", handleWebPrintMessage, false);
         openPrintWindow();
         wptimeOut = setTimeout(dispatchWebPrint, 2000);
-    };
+        retry = false; // prevent reconnection after one attempt, until user initiates it
+    }
 
     function handleWebPrintMessage(event) {
         if (event.origin != "http://"+options.relayHost+":"+options.relayPort)
@@ -137,7 +146,8 @@ var WebPrint = function (init, opt) {
                 }
                 break;
             case "error": // cannot contact print applet from relay window
-                webprint.checkRelay();
+                if (retry)
+                    checkRelay();
         }
         //alert("The Web Printing service has been loaded in a new tab, keep it open for faster printing.");
     }
@@ -150,10 +160,10 @@ var WebPrint = function (init, opt) {
                 return;
             }
             var installFile="WebPrint.jar";
-            if (navigator.appVersion.indexOf("Win")!=-1) installFile="WebPrint_windows_1_1.exe";
-            if (navigator.appVersion.indexOf("Mac")!=-1) installFile="WebPrint_macos_1_1.dmg";
-            if (navigator.appVersion.indexOf("X11")!=-1) installFile="WebPrint_unix_1_1.sh";
-            if (navigator.appVersion.indexOf("Linux")!=-1) installFile="WebPrint_unix_1_1.sh";
+            if (navigator.appVersion.indexOf("Win")!=-1) installFile="WebPrint_windows_1_1_1.exe";
+            if (navigator.appVersion.indexOf("Mac")!=-1) installFile="WebPrint_macos_1_1_1.dmg";
+            if (navigator.appVersion.indexOf("X11")!=-1) installFile="WebPrint_unix_1_1_1.sh";
+            if (navigator.appVersion.indexOf("Linux")!=-1) installFile="WebPrint_unix_1_1_1.sh";
             window.open("https://content.wallaceit.com.au/webprint/"+installFile, '_blank');
         }
     }
@@ -179,9 +189,8 @@ var WebPrint = function (init, opt) {
 
     function deployAndroidChrome(){
         // this link needs to be clicked by the user
-        var html = '<div id="intent_link" style="position: fixed; top:40%; width: 120px; background-color: white; left:50%; margin-left: -60px; border: solid 2px rgb(75, 75, 75); font-family: Helvetica SansSerif sans-serif; text-align: center; padding: 5px;">' +
+        document.body.innerHTML += '<div id="intent_link" style="position: fixed; top:40%; width: 120px; background-color: white; left:50%; margin-left: -60px; border: solid 2px rgb(75, 75, 75); font-family: Helvetica SansSerif sans-serif; text-align: center; padding: 5px;">' +
             '<a onclick="window.location=\'intent://#Intent;scheme=webprint;package=au.com.wallaceit.webprint;S.browser_fallback_url=https%3A%2F%2Fwallaceit.com.au%2Fplaystore%2Fwebprint;end\'; document.getElementById(\'intent_link\').remove();">Click To Open WebPrint</a></div>';
-        document.body.innerHTML += html;
     }
 
     function deployAndroidFirefox() {
@@ -202,11 +211,7 @@ var WebPrint = function (init, opt) {
 
     var isAndroid = navigator.appVersion.indexOf("Android")!=-1;
 
-    if (init) this.checkRelay();
+    if (init) checkRelay();
     
     return this;
 };
-
-
-
-

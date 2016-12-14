@@ -91,6 +91,7 @@ class Server {
         } catch (IOException ex) {
             error = ex.getMessage();
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(jframe, "Error starting server: "+error);
         }
     }
     
