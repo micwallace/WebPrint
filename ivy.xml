@@ -11,8 +11,8 @@
     <dependencies>
         <!-- compile dependencies -->
         <dependency org="com.dorkbox" name="SystemTray" rev="latest.release" conf="compile->default"/>
-        <!--<dependency org="org.scream3r" name="jssc" rev="latest.release" conf="compile->default"/>
-        <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5" conf="runtime->default"/>-->
+        <!--<dependency org="org.scream3r" name="jssc" rev="latest.release" conf="compile->default"/>-->
+        <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5" conf="runtime->default"/>
         <dependency org="com.google.inject" name="guice" rev="3.0" transitive="false" conf="compile->default"/>
         <dependency org="org.apache.httpcomponents" name="httpcore" rev="latest.release" conf="compile->default"/>
         <dependency org="com.googlecode.json-simple" name="json-simple" rev="latest.release" conf="compile->default"/>

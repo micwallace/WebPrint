@@ -106,6 +106,10 @@
         <delete dir="lib"/>
     </target>
     
+    <target name="clean-all" depends="clean" description="Additionally purge ivy cache" xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+        <ivy:cleancache/>
+    </target>
+    
     <target name="package-for-store" depends="jar">
 
         <!-- Change the value of this property to be the name of your JAR,

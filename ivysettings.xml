@@ -1,10 +1,13 @@
 <ivysettings>
-   <settings defaultResolver="central" />
+   <settings defaultResolver="chain" />
    <resolvers>
       <filesystem name='local'>
         <artifact pattern='${ivy.settings.dir}/local-libs/[artifact].[ext]'/>
       </filesystem>
-      <ibiblio name="central" m2compatible="true"/>
+      <chain name="chain">
+        <ibiblio name="central" m2compatible="true"/>
+        <ibiblio name="example" m2compatible="true" root="http://maven-eclipse.github.io/maven"/>
+      </chain>
    </resolvers>
    <modules>
       <module organisation="NA" resolver="local"/>
